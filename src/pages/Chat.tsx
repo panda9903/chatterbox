@@ -1,4 +1,3 @@
-import React from "react";
 import { userStore } from "../store/UserStore";
 
 const Chat = () => {
