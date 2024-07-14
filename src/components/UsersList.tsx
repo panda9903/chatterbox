@@ -2,6 +2,7 @@ import { userStore } from "../store/UserStore";
 import { db } from "../firebase";
 import { get, ref, update } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
+import { useEffect } from "react";
 
 const UsersList = () => {
   const users = userStore((state) => state.users);
@@ -10,35 +11,42 @@ const UsersList = () => {
   const setSelectedUser = userStore((state) => state.setSelectedUser);
   const selectedUser = userStore((state) => state.selectedUser);
 
-  /* const changeStatusToRead = (uid: string) => {
+  const changeStatusToRead = (uid: string) => {
     console.log(uid, "changeSeenStatus");
-    get(ref(db, "messages/" + selectedUser.uid + "/" + uid)).then(
-      (snapshot) => {
-        console.log(snapshot.exists(), "snapshot");
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          console.log(data, "data");
-          const messages = Object.keys(data).map((key) => {
-            console.log(data[key].seen, "seen");
-            if (data[key].seen === "received") {
-              update(
-                ref(db, "messages/" + selectedUser.uid + "/" + uid + "/" + key),
-                {
-                  seen: "read",
-                }
-              );
-            }
-          });
-        }
+    get(ref(db, "messages/" + uid + "/" + userId)).then((snapshot) => {
+      console.log(snapshot.exists(), "snapshot");
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log(data, "data");
+        const messages = Object.keys(data).map((key) => {
+          console.log(data[key].seen, " is seen for ", data[key].text);
+          if (data[key].seen === "received") {
+            console.log("changing seen status");
+            update(
+              ref(
+                db,
+                "messages/" + selectedUser.uid + "/" + userId + "/" + key
+              ),
+              {
+                seen: "read",
+              }
+            );
+          }
+        });
       }
-    );
-  }; */
+    });
+  };
+
+  useEffect(() => {
+    if (selectedUser.uid) {
+      changeStatusToRead(selectedUser.uid);
+    }
+  });
 
   const getChats = (uid: string, name: string, status: string) => {
     try {
       setSelectedUser({ name, uid, status });
-      /*       changeStatusToRead(uid);
-       */ const chatRefs = ref(db, "messages/" + userId + "/" + uid);
+      const chatRefs = ref(db, "messages/" + userId + "/" + uid);
       get(chatRefs).then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
