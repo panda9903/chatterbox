@@ -1,7 +1,7 @@
 import MessageBox from "./MessageBox";
 import Messages from "./Messages";
 import { db } from "../firebase";
-import { onDisconnect, ref, update, set, onValue } from "firebase/database";
+import { onDisconnect, ref, update, onValue } from "firebase/database";
 import { userStore } from "../store/UserStore";
 import { useEffect } from "react";
 

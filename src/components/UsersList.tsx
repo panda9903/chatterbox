@@ -1,12 +1,7 @@
 import { userStore } from "../store/UserStore";
 import { db } from "../firebase";
-import { get, ref, set } from "firebase/database";
+import { get, ref } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
-
-type User = {
-  id: string;
-  name: string;
-};
 
 const UsersList = () => {
   const users = userStore((state) => state.users);
@@ -23,6 +18,13 @@ const UsersList = () => {
         console.log(snapshot.val());
         if (snapshot.exists()) {
           console.log(snapshot.val());
+          const data = snapshot.val();
+          const messages = Object.keys(data).map((key) => ({
+            text: data[key].text,
+            uid: data[key].uid,
+            name: data[key].name,
+          }));
+          setMessages(messages);
         } else {
           console.log("No data available");
           setMessages([]);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Input } from "react-chat-elements";
 import { Button } from "react-chat-elements";
 import { db } from "../firebase";
-import { get, onValue, push, ref, set } from "firebase/database";
+import { onValue, push, ref } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
 import { userStore } from "../store/UserStore";
 
@@ -65,13 +65,13 @@ const MessageBox = () => {
     }
   };
   return (
-    <div className=" absolute bottom-4 flex flex-row grow">
+    <div className=" relative sticky bottom-4 flex grow mt-4 pr-20">
       {showMessageBox === true ? (
         <>
           <Input
             placeholder="Type here..."
             autofocus
-            className=" w-3/4"
+            className=" "
             onSubmit={sendMessage}
             maxHeight={100}
             onChange={(e: {
