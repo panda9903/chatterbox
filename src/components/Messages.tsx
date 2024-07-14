@@ -35,7 +35,7 @@ const Messages = () => {
           retracted={false}
         />
       ))}
-      <div ref={scrollDownRef}></div>
+      <div ref={scrollDownRef} className="mt-4"></div>
     </div>
   );
 };

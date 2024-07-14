@@ -24,7 +24,8 @@ const MessageBox = () => {
   }, [selectedUser]);
 
   useEffect(() => {
-    onValue(ref(db, "messages/" + userId), (snapshot) => {
+    const messagesRef = ref(db, "messages/" + userId);
+    const unsubscribe = onValue(messagesRef, (snapshot) => {
       if (snapshot.exists()) {
         console.log("From DB", snapshot.val());
         const data = snapshot.val();
@@ -41,14 +42,16 @@ const MessageBox = () => {
         console.log("No data available");
       }
     });
-  }, []);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [selectedUser, setMessages, userId]);
 
   const sendMessage = async (e) => {
     try {
       e.preventDefault();
       if (message === "") return;
-      console.log("messages/" + userId + "/" + selectedUser.uid);
-      console.log("messages/" + selectedUser.uid + "/" + userId);
       push(ref(db, "messages/" + userId + "/" + selectedUser.uid), {
         text: message,
         uid: userId,
