@@ -60,6 +60,7 @@ const MessageBox = () => {
           name: name,
         });
       });
+      setMessage("");
     } catch (error) {
       console.log("Error in sendMessage");
     }
@@ -74,6 +75,7 @@ const MessageBox = () => {
             className=" border border-black"
             onSubmit={sendMessage}
             maxHeight={150}
+            value={message}
             onChange={(e: {
               target: { value: React.SetStateAction<string> };
             }) => setMessage(e.target.value)}

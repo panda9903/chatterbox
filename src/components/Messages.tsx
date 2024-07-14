@@ -22,7 +22,7 @@ const Messages = () => {
           type={"text"}
           text={message.text}
           title={message.name}
-          id={message.text}
+          id={Math.random() * 1000000}
           focus={false}
           date={new Date()}
           titleColor="#000000"
