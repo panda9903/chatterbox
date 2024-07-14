@@ -2,13 +2,20 @@ import { MessageBox } from "react-chat-elements";
 import "react-chat-elements/dist/main.css";
 import { userStore } from "../store/UserStore";
 import { messageStore } from "../store/MessageStore";
+import { useEffect, useRef } from "react";
 
 const Messages = () => {
   const uid = userStore((state) => state.uid);
   const messages = messageStore((state) => state.messages);
 
+  const scrollDownRef = useRef(null);
+
+  useEffect(() => {
+    scrollDownRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className=" text-black ">
+    <div className=" text-black flex flex-col grow mb-8">
       {messages.map((message) => (
         <MessageBox
           position={message.uid === uid ? "right" : "left"}
@@ -28,6 +35,7 @@ const Messages = () => {
           retracted={false}
         />
       ))}
+      <div ref={scrollDownRef}></div>
     </div>
   );
 };

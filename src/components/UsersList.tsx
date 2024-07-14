@@ -37,7 +37,7 @@ const UsersList = () => {
 
   return (
     <div>
-      <ul className=" flex flex-col grow">
+      <ul className=" flex flex-col grow pt-4">
         {users.map((user) => {
           if (user.uid !== userId) {
             return (

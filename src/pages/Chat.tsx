@@ -19,9 +19,13 @@ const Chat = () => {
   }, []);
 
   return (
-    <div className="  flex flex-row gap-8">
-      <UsersList />
-      <ChatWindow />
+    <div className="flex flex-row overflow-clip">
+      <div className="overflow-y-scroll border border-r-2 px-3">
+        <UsersList />
+      </div>
+      <div className="overflow-y-scroll grow px-3">
+        <ChatWindow />
+      </div>
     </div>
   );
 };

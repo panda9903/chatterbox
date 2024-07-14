@@ -65,20 +65,25 @@ const MessageBox = () => {
     }
   };
   return (
-    <div className=" relative sticky bottom-4 flex grow mt-4 pr-20">
+    <div className=" relative sticky bottom-4 flex mt-4 pr-20 gap-4">
       {showMessageBox === true ? (
         <>
           <Input
             placeholder="Type here..."
             autofocus
-            className=" "
+            className=" border border-black"
             onSubmit={sendMessage}
-            maxHeight={100}
+            maxHeight={150}
             onChange={(e: {
               target: { value: React.SetStateAction<string> };
             }) => setMessage(e.target.value)}
           />
-          <Button text={"Send"} onClick={sendMessage} title="Send" />
+          <Button
+            text={">>"}
+            onClick={sendMessage}
+            title="Send"
+            className="w-16"
+          />
         </>
       ) : (
         <p>Select a user</p>
