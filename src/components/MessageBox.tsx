@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Input } from "react-chat-elements";
 import { Button } from "react-chat-elements";
 import { db } from "../firebase";
-import { onValue, push, ref } from "firebase/database";
+import { onValue, push, ref, serverTimestamp } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
 import { userStore } from "../store/UserStore";
 
@@ -27,7 +27,7 @@ const MessageBox = () => {
     const messagesRef = ref(db, "messages/" + userId);
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       if (snapshot.exists()) {
-        console.log("From DB", snapshot.val());
+        //console.log("From DB", snapshot.val());
         const data = snapshot.val();
         const messages = data[selectedUser.uid];
 
@@ -35,10 +35,13 @@ const MessageBox = () => {
           text: messages[key].text,
           uid: messages[key].uid,
           name: messages[key].name,
+          seen: messages[key].seen,
+          timestamp: messages[key].timestamp,
         }));
         setMessages(messagesArray);
         console.log("messagesArray", messagesArray);
       } else {
+        setMessages([]);
         console.log("No data available");
       }
     });
@@ -56,11 +59,15 @@ const MessageBox = () => {
         text: message,
         uid: userId,
         name: name,
+        seen: selectedUser.status === "online" ? "delivered" : "sent",
+        timestamp: serverTimestamp(),
       }).then(() => {
         push(ref(db, "messages/" + selectedUser.uid + "/" + userId), {
           text: message,
           uid: userId,
           name: name,
+          seen: selectedUser.status === "online" ? "received" : "sent",
+          timestamp: serverTimestamp(),
         });
       });
       setMessage("");

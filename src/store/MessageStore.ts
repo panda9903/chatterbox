@@ -4,6 +4,8 @@ interface Message {
   text: string;
   uid: string;
   name: string;
+  seen: "sent" | "waiting" | "received" | "read";
+  timestamp: string;
 }
 
 interface MessageStore {

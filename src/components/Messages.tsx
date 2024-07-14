@@ -24,13 +24,13 @@ const Messages = () => {
           title={message.name}
           id={Math.random() * 1000000}
           focus={false}
-          date={new Date()}
+          date={new Date(message.timestamp)}
           titleColor="#000000"
           replyButton={false}
           onReplyMessageClick={() => {}}
           forwarded={false}
           removeButton={false}
-          status={message.uid === uid ? "read" : "received"}
+          status={message.uid !== uid ? "read" : message.seen}
           notch={false}
           retracted={false}
         />

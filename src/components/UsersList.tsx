@@ -11,20 +11,23 @@ const UsersList = () => {
 
   const getChats = (uid: string, name: string, status: string) => {
     try {
-      console.log(userId, uid);
+      //console.log(userId, uid);
       setSelectedUser({ name, uid, status });
       const chatRefs = ref(db, "messages/" + userId + "/" + uid);
       get(chatRefs).then((snapshot) => {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
         if (snapshot.exists()) {
-          console.log(snapshot.val());
+          //console.log(snapshot.val());
           const data = snapshot.val();
           const messages = Object.keys(data).map((key) => ({
             text: data[key].text,
             uid: data[key].uid,
             name: data[key].name,
+            seen: data[key].seen,
+            timestamp: data[key].timestamp,
           }));
           setMessages(messages);
+          console.log("messages", messages);
         } else {
           console.log("No data available");
           setMessages([]);
