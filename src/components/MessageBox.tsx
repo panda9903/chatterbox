@@ -59,7 +59,7 @@ const MessageBox = () => {
         text: message,
         uid: userId,
         name: name,
-        seen: selectedUser.status === "online" ? "delivered" : "sent",
+        seen: selectedUser.status === "online" ? "received" : "sent",
         timestamp: serverTimestamp(),
       }).then(() => {
         push(ref(db, "messages/" + selectedUser.uid + "/" + userId), {
