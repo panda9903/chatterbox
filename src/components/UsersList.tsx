@@ -1,6 +1,6 @@
 import { userStore } from "../store/UserStore";
 import { db } from "../firebase";
-import { get, ref } from "firebase/database";
+import { get, ref, update } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
 
 const UsersList = () => {
@@ -8,24 +8,56 @@ const UsersList = () => {
   const userId = userStore((state) => state.uid);
   const setMessages = messageStore((state) => state.setMessages);
   const setSelectedUser = userStore((state) => state.setSelectedUser);
+  const selectedUser = userStore((state) => state.selectedUser);
+
+  /* const changeStatusToRead = (uid: string) => {
+    console.log(uid, "changeSeenStatus");
+    get(ref(db, "messages/" + selectedUser.uid + "/" + uid)).then(
+      (snapshot) => {
+        console.log(snapshot.exists(), "snapshot");
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log(data, "data");
+          const messages = Object.keys(data).map((key) => {
+            console.log(data[key].seen, "seen");
+            if (data[key].seen === "received") {
+              update(
+                ref(db, "messages/" + selectedUser.uid + "/" + uid + "/" + key),
+                {
+                  seen: "read",
+                }
+              );
+            }
+          });
+        }
+      }
+    );
+  }; */
 
   const getChats = (uid: string, name: string, status: string) => {
     try {
-      //console.log(userId, uid);
       setSelectedUser({ name, uid, status });
-      const chatRefs = ref(db, "messages/" + userId + "/" + uid);
+      /*       changeStatusToRead(uid);
+       */ const chatRefs = ref(db, "messages/" + userId + "/" + uid);
       get(chatRefs).then((snapshot) => {
-        //console.log(snapshot.val());
         if (snapshot.exists()) {
-          //console.log(snapshot.val());
           const data = snapshot.val();
-          const messages = Object.keys(data).map((key) => ({
-            text: data[key].text,
-            uid: data[key].uid,
-            name: data[key].name,
-            seen: data[key].seen,
-            timestamp: data[key].timestamp,
-          }));
+          const messages = Object.keys(data).map((key) => {
+            /*  console.log(
+              data[key].text,
+              data[key].uid,
+              data[key].name,
+              data[key].seen,
+              data[key].timestamp
+            ); */
+            return {
+              text: data[key].text,
+              uid: data[key].uid,
+              name: data[key].name,
+              seen: data[key].seen,
+              timestamp: data[key].timestamp,
+            };
+          });
           setMessages(messages);
           console.log("messages", messages);
         } else {

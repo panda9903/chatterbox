@@ -7,6 +7,7 @@ import {
   update,
   onValue,
   serverTimestamp,
+  get,
 } from "firebase/database";
 import { userStore } from "../store/UserStore";
 import { useEffect } from "react";
@@ -21,6 +22,30 @@ const ChatWindow = () => {
 
   const usersRef = ref(db, "users/" + uid);
   const allUsersRef = ref(db, "users");
+
+  const changeSeenStatus = (uid: string) => {
+    console.log(uid, "changeSeenStatus");
+
+    get(ref(db, "messages/" + selectedUser.uid + "/" + uid)).then(
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log(data, "data");
+          const messages = Object.keys(data).map((key) => {
+            console.log(data[key].seen, "seen");
+            if (data[key].seen === "sent") {
+              update(
+                ref(db, "messages/" + selectedUser.uid + "/" + uid + "/" + key),
+                {
+                  seen: "received",
+                }
+              );
+            }
+          });
+        }
+      }
+    );
+  };
 
   const updateStatus = ({ status }: { status: string }) => {
     update(usersRef, {
@@ -57,6 +82,19 @@ const ChatWindow = () => {
         const users = Object.keys(data).map((key) => {
           console.log(data[key].name, key, data[key].status);
 
+          if (key === selectedUser.uid) {
+            setSelectedUser({
+              name: data[key].name,
+              uid: key,
+              status: data[key].status,
+            });
+          }
+
+          if (data[key].status === "online") {
+            console.log("online", data[key].name);
+            changeSeenStatus(key);
+          }
+
           return {
             name: data[key].name,
             uid: key,
@@ -64,11 +102,6 @@ const ChatWindow = () => {
           };
         });
         setUsers(users);
-        for (let user of users) {
-          if (user.uid === selectedUser.uid) {
-            setSelectedUser(user);
-          }
-        }
       }
     });
   }, []);
