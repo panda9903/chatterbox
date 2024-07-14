@@ -25,7 +25,13 @@ const Login = () => {
       console.error(error);
     }
   };
-  return <button onClick={handleGoogleSignIn}>Sign in with Google</button>;
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <button onClick={handleGoogleSignIn} className="">
+        Sign in with Google
+      </button>
+    </div>
+  );
 };
 
 export default Login;
