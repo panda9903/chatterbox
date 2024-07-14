@@ -6,10 +6,7 @@ type User = {
 };
 
 const UsersList = () => {
-  const [users, setUsers] = useState<User[]>([
-    { id: "1", name: "John Doe" },
-    { id: "2", name: "Jane Doe" },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
 
   return (
     <div>

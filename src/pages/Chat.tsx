@@ -7,8 +7,6 @@ import ChatWindow from "../components/ChatWindow";
 const Chat = () => {
   const name = userStore((state) => state.name);
   const uid = userStore((state) => state.uid);
-  console.log(uid);
-  console.log(name);
 
   const navigate = useNavigate();
 
