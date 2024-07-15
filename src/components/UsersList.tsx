@@ -1,16 +1,21 @@
 import { userStore } from "../store/UserStore";
-import { db } from "../firebase";
-import { get, ref, update } from "firebase/database";
+import { auth, db } from "../firebase";
+import { get, serverTimestamp, ref, update } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
 
 const UsersList = () => {
   const users = userStore((state) => state.users);
   const userId = userStore((state) => state.uid);
+  const name = userStore((state) => state.name);
   const setMessages = messageStore((state) => state.setMessages);
   const setSelectedUser = userStore((state) => state.setSelectedUser);
   const selectedUser = userStore((state) => state.selectedUser);
   const messages = messageStore((state) => state.messages);
+  const navigate = useNavigate();
+  const usersRef = ref(db, "users/" + userId);
 
   const changeStatusToRead = () => {
     get(ref(db, "messages/" + selectedUser.uid + "/" + userId)).then(
@@ -88,6 +93,23 @@ const UsersList = () => {
           return null;
         })}
       </ul>
+
+      <div className=" absolute bottom-4 ">
+        <button
+          onClick={() => {
+            signOut(auth).then(() => {
+              update(usersRef, {
+                status: "offline",
+                name: name,
+                lastActive: serverTimestamp(),
+              });
+            });
+            navigate("/login");
+          }}
+        >
+          Sign Out
+        </button>
+      </div>
     </div>
   );
 };

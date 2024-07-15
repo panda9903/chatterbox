@@ -1,6 +1,7 @@
 import MessageBox from "./MessageBox";
 import Messages from "./Messages";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
+
 import {
   onDisconnect,
   ref,
@@ -11,6 +12,7 @@ import {
 } from "firebase/database";
 import { userStore } from "../store/UserStore";
 import { useEffect } from "react";
+import { signOut } from "firebase/auth";
 
 const ChatWindow = () => {
   const name = userStore((state) => state.name);
@@ -65,12 +67,6 @@ const ChatWindow = () => {
   if (!name || !uid) return null;
 
   useEffect(() => {
-    onDisconnect(usersRef).set({
-      status: "offline",
-      name: name,
-      lastActive: serverTimestamp(),
-    });
-
     const connectedRef = ref(db, ".info/connected");
     onValue(connectedRef, (snap) => {
       if (snap.val() === true) {
@@ -81,6 +77,7 @@ const ChatWindow = () => {
     });
 
     onValue(allUsersRef, (snapshot) => {
+      console.log("Someone changed");
       if (snapshot.exists()) {
         const data = snapshot.val();
         const users = Object.keys(data).map((key) => {
@@ -95,6 +92,7 @@ const ChatWindow = () => {
           if (data[key].status === "online") {
             changeSeenStatus(key);
           }
+          console.log(data[key].status, key, data[key].name);
           return {
             name: data[key].name,
             uid: key,
@@ -104,6 +102,16 @@ const ChatWindow = () => {
         setUsers(users);
       }
     });
+
+    onDisconnect(usersRef)
+      .set({
+        status: "offline",
+        name: name,
+        lastActive: serverTimestamp(),
+      })
+      .then(() => {
+        signOut(auth);
+      });
   }, []);
 
   return (
