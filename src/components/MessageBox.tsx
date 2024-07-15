@@ -77,7 +77,7 @@ const MessageBox = () => {
     }
   };
   return (
-    <div className=" relative sticky bottom-4 flex mt-4 pr-20 gap-4 bg-white">
+    <div className=" relative sticky bottom-4 flex mt-4 pr-20 gap-4">
       {showMessageBox === true ? (
         <>
           <Input
@@ -87,11 +87,6 @@ const MessageBox = () => {
             onSubmit={sendMessage}
             maxHeight={150}
             value={message}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                sendMessage(e);
-              }
-            }}
             onChange={(e: {
               target: { value: React.SetStateAction<string> };
             }) => setMessage(e.target.value)}
