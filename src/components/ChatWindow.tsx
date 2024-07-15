@@ -30,18 +30,28 @@ const ChatWindow = () => {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          console.log(data, "data");
-          const messages = Object.keys(data).map((key) => {
-            console.log(data[key].seen, "seen");
-            if (data[key].seen === "sent") {
-              update(
-                ref(db, "messages/" + selectedUser.uid + "/" + uid + "/" + key),
-                {
-                  seen: "received",
-                }
-              );
+          for (const [senderId, senderMessages] of Object.entries(data)) {
+            for (const [messageId, message] of Object.entries(senderMessages)) {
+              if (message.seen === "sent") {
+                update(
+                  ref(
+                    db,
+                    "messages/" +
+                      selectedUser.uid +
+                      "/" +
+                      uid +
+                      "/" +
+                      senderId +
+                      "/" +
+                      messageId
+                  ),
+                  {
+                    seen: "received",
+                  }
+                );
+              }
             }
-          });
+          }
         }
       }
     );
@@ -78,9 +88,8 @@ const ChatWindow = () => {
       if (snapshot.exists()) {
         //console.log(snapshot.val());
         const data = snapshot.val();
-
         const users = Object.keys(data).map((key) => {
-          console.log(data[key].name, key, data[key].status);
+          console.log(data[key].name, key, data[key].status, " is a user");
 
           if (key === selectedUser.uid) {
             setSelectedUser({
@@ -88,13 +97,13 @@ const ChatWindow = () => {
               uid: key,
               status: data[key].status,
             });
+            console.log("selected user", data[key].name);
           }
 
           if (data[key].status === "online") {
             console.log("online", data[key].name);
             changeSeenStatus(key);
           }
-
           return {
             name: data[key].name,
             uid: key,
@@ -102,6 +111,7 @@ const ChatWindow = () => {
           };
         });
         setUsers(users);
+        console.log("users", users);
       }
     });
   }, []);

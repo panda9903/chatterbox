@@ -2,6 +2,7 @@ import { userStore } from "../store/UserStore";
 import { db } from "../firebase";
 import { get, ref, update } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
+import { useEffect } from "react";
 
 const UsersList = () => {
   const users = userStore((state) => state.users);
@@ -9,20 +10,24 @@ const UsersList = () => {
   const setMessages = messageStore((state) => state.setMessages);
   const setSelectedUser = userStore((state) => state.setSelectedUser);
   const selectedUser = userStore((state) => state.selectedUser);
+  const messages = messageStore((state) => state.messages);
 
-  /* const changeStatusToRead = (uid: string) => {
-    console.log(uid, "changeSeenStatus");
-    get(ref(db, "messages/" + selectedUser.uid + "/" + uid)).then(
+  const changeStatusToRead = () => {
+    console.log(selectedUser.uid, "changeSeenStatus");
+    get(ref(db, "messages/" + selectedUser.uid + "/" + userId)).then(
       (snapshot) => {
-        console.log(snapshot.exists(), "snapshot");
+        //console.log(snapshot.exists(), "snapshot");
         if (snapshot.exists()) {
           const data = snapshot.val();
-          console.log(data, "data");
-          const messages = Object.keys(data).map((key) => {
-            console.log(data[key].seen, "seen");
+          //console.log(data, "data");
+          Object.keys(data).map((key) => {
+            //console.log(data[key].seen, "seen");
             if (data[key].seen === "received") {
               update(
-                ref(db, "messages/" + selectedUser.uid + "/" + uid + "/" + key),
+                ref(
+                  db,
+                  "messages/" + selectedUser.uid + "/" + userId + "/" + key
+                ),
                 {
                   seen: "read",
                 }
@@ -32,13 +37,17 @@ const UsersList = () => {
         }
       }
     );
-  }; */
+  };
+
+  useEffect(() => {
+    changeStatusToRead();
+  }, [selectedUser, messages]);
 
   const getChats = (uid: string, name: string, status: string) => {
     try {
       setSelectedUser({ name, uid, status });
-      /*       changeStatusToRead(uid);
-       */ const chatRefs = ref(db, "messages/" + userId + "/" + uid);
+      changeStatusToRead();
+      const chatRefs = ref(db, "messages/" + userId + "/" + uid);
       get(chatRefs).then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();

@@ -55,6 +55,7 @@ const MessageBox = () => {
     try {
       e.preventDefault();
       if (message === "") return;
+      console.log("Selected User when sending", selectedUser);
       push(ref(db, "messages/" + userId + "/" + selectedUser.uid), {
         text: message,
         uid: userId,
