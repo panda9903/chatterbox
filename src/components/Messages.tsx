@@ -25,7 +25,7 @@ const Messages = () => {
           id={Math.random() * 1000000}
           focus={false}
           date={new Date(message.timestamp)}
-          titleColor="#000000"
+          titleColor={message.uid === uid ? "#128C7E" : "#000"}
           replyButton={false}
           onReplyMessageClick={() => {}}
           forwarded={false}
@@ -35,7 +35,10 @@ const Messages = () => {
           retracted={false}
         />
       ))}
-      <div ref={scrollDownRef} className="mt-4"></div>
+      <div
+        ref={scrollDownRef}
+        className="mt-4 absolute bottom-0 h-4 w-[calc(100%-300px)] bg-white z-50"
+      ></div>
     </div>
   );
 };

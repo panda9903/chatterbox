@@ -81,7 +81,7 @@ const UsersList = () => {
 
   return (
     <div>
-      <ul className=" flex flex-col grow pt-4">
+      <ul className=" flex flex-col pt-4 gap-3 max-w-60">
         {users.map((user) => {
           if (user.uid !== userId) {
             return (
@@ -89,7 +89,7 @@ const UsersList = () => {
                 className=""
                 onClick={() => getChats(user.uid, user.name, user.status)}
               >
-                <li key={user.uid}>
+                <li key={user.uid} className="">
                   <div>
                     <p>{user.name}</p>
                     <p className=" text-gray-600 ">{user.status}</p>
