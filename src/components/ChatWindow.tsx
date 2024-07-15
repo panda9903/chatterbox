@@ -77,7 +77,7 @@ const ChatWindow = () => {
     });
 
     onValue(allUsersRef, (snapshot) => {
-      console.log("Someone changed");
+      //console.log("Someone changed");
       if (snapshot.exists()) {
         const data = snapshot.val();
         const users = Object.keys(data).map((key) => {
@@ -92,7 +92,7 @@ const ChatWindow = () => {
           if (data[key].status === "online") {
             changeSeenStatus(key);
           }
-          console.log(data[key].status, key, data[key].name);
+          //console.log(data[key].status, key, data[key].name);
           return {
             name: data[key].name,
             uid: key,
