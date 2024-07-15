@@ -1,30 +1,17 @@
-# React + TypeScript + Vite
+# chatterbox
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Made a simple chat application
 
-Currently, two official plugins are available:
+- Can chat one to one
+- Read receipts, similar to that of WhatsApp (Single tick, Double tick, Blue tick)
+- Firebase Auth
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+You can chat [here](https://chatterbox-f1da5.firebaseapp.com/login)
 
-## Expanding the ESLint configuration
+### I took help from
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- YouTube, StackOverflow for presence and read receipts implementation ideas
+- ChatGPT, Gemini and CoPilot for coding
+- This [npm package](https://www.npmjs.com/package/react-chat-elements) for some chat components
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Ping me [here](mailto:satwik9903@gmail.com) so that we can discuss about **chatterbox**
