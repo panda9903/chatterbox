@@ -27,7 +27,6 @@ const MessageBox = () => {
     const messagesRef = ref(db, "messages/" + userId);
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       if (snapshot.exists()) {
-        //console.log("From DB", snapshot.val());
         const data = snapshot.val();
         const messages = data[selectedUser.uid];
 
@@ -39,10 +38,8 @@ const MessageBox = () => {
           timestamp: messages[key].timestamp,
         }));
         setMessages(messagesArray);
-        console.log("messagesArray", messagesArray);
       } else {
         setMessages([]);
-        console.log("No data available");
       }
     });
 
@@ -55,7 +52,6 @@ const MessageBox = () => {
     try {
       e.preventDefault();
       if (message === "") return;
-      console.log("Selected User when sending", selectedUser);
       push(ref(db, "messages/" + userId + "/" + selectedUser.uid), {
         text: message,
         uid: userId,
@@ -77,7 +73,7 @@ const MessageBox = () => {
     }
   };
   return (
-    <div className=" relative sticky bottom-4 flex mt-4 pr-20 gap-4">
+    <div className=" relative sticky bottom-4 flex mt-4 pr-20 gap-4 bg-white">
       {showMessageBox === true ? (
         <>
           <Input
@@ -87,6 +83,11 @@ const MessageBox = () => {
             onSubmit={sendMessage}
             maxHeight={150}
             value={message}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendMessage(e);
+              }
+            }}
             onChange={(e: {
               target: { value: React.SetStateAction<string> };
             }) => setMessage(e.target.value)}

@@ -24,8 +24,6 @@ const ChatWindow = () => {
   const allUsersRef = ref(db, "users");
 
   const changeSeenStatus = (uid: string) => {
-    console.log(uid, "changeSeenStatus");
-
     get(ref(db, "messages/" + selectedUser.uid + "/" + uid)).then(
       (snapshot) => {
         if (snapshot.exists()) {
@@ -75,33 +73,26 @@ const ChatWindow = () => {
 
     const connectedRef = ref(db, ".info/connected");
     onValue(connectedRef, (snap) => {
-      console.log(snap.val(), "is data");
       if (snap.val() === true) {
         updateStatus({ status: "online" });
       } else {
-        console.log("not connected");
         updateStatus({ status: "offline" });
       }
     });
 
     onValue(allUsersRef, (snapshot) => {
       if (snapshot.exists()) {
-        //console.log(snapshot.val());
         const data = snapshot.val();
         const users = Object.keys(data).map((key) => {
-          console.log(data[key].name, key, data[key].status, " is a user");
-
           if (key === selectedUser.uid) {
             setSelectedUser({
               name: data[key].name,
               uid: key,
               status: data[key].status,
             });
-            console.log("selected user", data[key].name);
           }
 
           if (data[key].status === "online") {
-            console.log("online", data[key].name);
             changeSeenStatus(key);
           }
           return {
@@ -111,7 +102,6 @@ const ChatWindow = () => {
           };
         });
         setUsers(users);
-        console.log("users", users);
       }
     });
   }, []);

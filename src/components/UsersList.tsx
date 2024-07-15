@@ -13,15 +13,11 @@ const UsersList = () => {
   const messages = messageStore((state) => state.messages);
 
   const changeStatusToRead = () => {
-    console.log(selectedUser.uid, "changeSeenStatus");
     get(ref(db, "messages/" + selectedUser.uid + "/" + userId)).then(
       (snapshot) => {
-        //console.log(snapshot.exists(), "snapshot");
         if (snapshot.exists()) {
           const data = snapshot.val();
-          //console.log(data, "data");
           Object.keys(data).map((key) => {
-            //console.log(data[key].seen, "seen");
             if (data[key].seen === "received") {
               update(
                 ref(
@@ -52,13 +48,6 @@ const UsersList = () => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const messages = Object.keys(data).map((key) => {
-            /*  console.log(
-              data[key].text,
-              data[key].uid,
-              data[key].name,
-              data[key].seen,
-              data[key].timestamp
-            ); */
             return {
               text: data[key].text,
               uid: data[key].uid,
@@ -68,9 +57,7 @@ const UsersList = () => {
             };
           });
           setMessages(messages);
-          console.log("messages", messages);
         } else {
-          console.log("No data available");
           setMessages([]);
         }
       });
@@ -81,7 +68,7 @@ const UsersList = () => {
 
   return (
     <div>
-      <ul className=" flex flex-col grow pt-4">
+      <ul className=" flex flex-col pt-4 max-w-60 gap-3">
         {users.map((user) => {
           if (user.uid !== userId) {
             return (

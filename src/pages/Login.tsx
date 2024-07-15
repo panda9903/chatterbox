@@ -14,11 +14,9 @@ const Login = () => {
       await signInWithPopup(auth, provider);
       const authForUserDetails = getAuth();
       const user = authForUserDetails.currentUser;
-      //console.log(user);
       if (!user) return;
       const name = user?.displayName;
       const id = user?.uid;
-      //console.log(name, id);
       setIds(name || "John Doe", id);
       navigate("/chat");
     } catch (error) {
