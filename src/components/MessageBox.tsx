@@ -2,42 +2,60 @@ import React, { useEffect, useState } from "react";
 import { Input } from "react-chat-elements";
 import { Button } from "react-chat-elements";
 import { db } from "../firebase";
-import { onValue, push, ref, serverTimestamp } from "firebase/database";
+import { get, onValue, push, ref, serverTimestamp } from "firebase/database";
 import { messageStore } from "../store/MessageStore";
 import { userStore } from "../store/UserStore";
+import { useShallow } from "zustand/react/shallow";
 
 const MessageBox = () => {
   const [message, setMessage] = useState("");
   const setMessages = messageStore((state) => state.setMessages);
   const name = userStore((state) => state.name);
-  const selectedUser = userStore((state) => state.selectedUser);
+  const { SUUid } = userStore(
+    useShallow((state) => ({
+      SUName: state.selectedUser.name,
+      SUUid: state.selectedUser.uid,
+      SUStatus: state.selectedUser.status,
+    }))
+  );
   const userId = userStore((state) => state.uid);
+
+  const getStatusOfSelectedUser = get(ref(db, "users/" + SUUid)).then(
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        return data.status;
+      }
+    }
+  );
 
   const [showMessageBox, setShowMessageBox] = useState(false);
 
   useEffect(() => {
-    if (selectedUser.uid !== "") {
+    if (SUUid !== "") {
       setShowMessageBox(true);
     } else {
       setShowMessageBox(false);
     }
-  }, [selectedUser]);
+  }, [SUUid]);
 
   useEffect(() => {
     const messagesRef = ref(db, "messages/" + userId);
     const unsubscribe = onValue(messagesRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const messages = data[selectedUser.uid];
+        const messages = data[SUUid];
 
-        const messagesArray = Object.keys(messages).map((key) => ({
-          text: messages[key].text,
-          uid: messages[key].uid,
-          name: messages[key].name,
-          seen: messages[key].seen,
-          timestamp: messages[key].timestamp,
-        }));
-        setMessages(messagesArray);
+        if (messages) {
+          const messagesArray = Object.keys(messages).map((key) => ({
+            text: messages[key].text,
+            uid: messages[key].uid,
+            name: messages[key].name,
+            seen: messages[key].seen,
+            timestamp: messages[key].timestamp,
+          }));
+          setMessages(messagesArray);
+        }
       } else {
         setMessages([]);
       }
@@ -46,24 +64,26 @@ const MessageBox = () => {
     return () => {
       unsubscribe();
     };
-  }, [selectedUser, setMessages, userId]);
+  }, [SUUid, setMessages, userId]);
 
   const sendMessage = async (e) => {
     try {
       e.preventDefault();
       if (message === "") return;
-      push(ref(db, "messages/" + userId + "/" + selectedUser.uid), {
+      push(ref(db, "messages/" + userId + "/" + SUUid), {
         text: message,
         uid: userId,
         name: name,
-        seen: selectedUser.status === "online" ? "received" : "sent",
+        seen:
+          (await getStatusOfSelectedUser) === "online" ? "received" : "sent",
         timestamp: serverTimestamp(),
-      }).then(() => {
-        push(ref(db, "messages/" + selectedUser.uid + "/" + userId), {
+      }).then(async () => {
+        push(ref(db, "messages/" + SUUid + "/" + userId), {
           text: message,
           uid: userId,
           name: name,
-          seen: selectedUser.status === "online" ? "received" : "sent",
+          seen:
+            (await getStatusOfSelectedUser) === "online" ? "received" : "sent",
           timestamp: serverTimestamp(),
         });
       });

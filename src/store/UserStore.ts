@@ -22,5 +22,6 @@ export const userStore = create<UserStore>()((set) => ({
   users: [],
   setUsers: (users: User[]) => set({ users }),
   selectedUser: { name: "", uid: "", status: "" },
-  setSelectedUser: (selectedUser: User) => set({ selectedUser }),
+  setSelectedUser: (newSelectedUser: User) =>
+    set((state) => ({ ...state, selectedUser: newSelectedUser })),
 }));

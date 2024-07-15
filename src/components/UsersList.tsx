@@ -5,6 +5,7 @@ import { messageStore } from "../store/MessageStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
+import { useShallow } from "zustand/react/shallow";
 
 const UsersList = () => {
   const users = userStore((state) => state.users);
@@ -12,37 +13,35 @@ const UsersList = () => {
   const name = userStore((state) => state.name);
   const setMessages = messageStore((state) => state.setMessages);
   const setSelectedUser = userStore((state) => state.setSelectedUser);
-  const selectedUser = userStore((state) => state.selectedUser);
+  const { SUUid } = userStore(
+    useShallow((state) => ({
+      SUName: state.selectedUser.name,
+      SUUid: state.selectedUser.uid,
+      SUStatus: state.selectedUser.status,
+    }))
+  );
   const messages = messageStore((state) => state.messages);
   const navigate = useNavigate();
   const usersRef = ref(db, "users/" + userId);
 
   const changeStatusToRead = () => {
-    get(ref(db, "messages/" + selectedUser.uid + "/" + userId)).then(
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          Object.keys(data).map((key) => {
-            if (data[key].seen === "received") {
-              update(
-                ref(
-                  db,
-                  "messages/" + selectedUser.uid + "/" + userId + "/" + key
-                ),
-                {
-                  seen: "read",
-                }
-              );
-            }
-          });
-        }
+    get(ref(db, "messages/" + SUUid + "/" + userId)).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        Object.keys(data).map((key) => {
+          if (data[key].seen === "received") {
+            update(ref(db, "messages/" + SUUid + "/" + userId + "/" + key), {
+              seen: "read",
+            });
+          }
+        });
       }
-    );
+    });
   };
 
   useEffect(() => {
     changeStatusToRead();
-  }, [selectedUser, messages]);
+  }, [SUUid, messages]);
 
   const getChats = (uid: string, name: string, status: string) => {
     try {

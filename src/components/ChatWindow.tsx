@@ -13,11 +13,18 @@ import {
 import { userStore } from "../store/UserStore";
 import { useEffect } from "react";
 import { signOut } from "firebase/auth";
+import { useShallow } from "zustand/react/shallow";
 
 const ChatWindow = () => {
   const name = userStore((state) => state.name);
   const uid = userStore((state) => state.uid);
-  const selectedUser = userStore((state) => state.selectedUser);
+  const { SUUid } = userStore(
+    useShallow((state) => ({
+      SUName: state.selectedUser.name,
+      SUUid: state.selectedUser.uid,
+      SUStatus: state.selectedUser.status,
+    }))
+  );
   const setSelectedUser = userStore((state) => state.setSelectedUser);
 
   const setUsers = userStore((state) => state.setUsers);
@@ -26,35 +33,33 @@ const ChatWindow = () => {
   const allUsersRef = ref(db, "users");
 
   const changeSeenStatus = (uid: string) => {
-    get(ref(db, "messages/" + selectedUser.uid + "/" + uid)).then(
-      (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          for (const [senderId, senderMessages] of Object.entries(data)) {
-            for (const [messageId, message] of Object.entries(senderMessages)) {
-              if (message.seen === "sent") {
-                update(
-                  ref(
-                    db,
-                    "messages/" +
-                      selectedUser.uid +
-                      "/" +
-                      uid +
-                      "/" +
-                      senderId +
-                      "/" +
-                      messageId
-                  ),
-                  {
-                    seen: "received",
-                  }
-                );
-              }
+    get(ref(db, "messages/" + SUUid + "/" + uid)).then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        for (const [senderId, senderMessages] of Object.entries(data)) {
+          for (const [messageId, message] of Object.entries(senderMessages)) {
+            if (message.seen === "sent") {
+              update(
+                ref(
+                  db,
+                  "messages/" +
+                    SUUid +
+                    "/" +
+                    uid +
+                    "/" +
+                    senderId +
+                    "/" +
+                    messageId
+                ),
+                {
+                  seen: "received",
+                }
+              );
             }
           }
         }
       }
-    );
+    });
   };
 
   const updateStatus = ({ status }: { status: string }) => {
@@ -81,18 +86,18 @@ const ChatWindow = () => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         const users = Object.keys(data).map((key) => {
-          if (key === selectedUser.uid) {
+          /* if (key === selectedUser.uid) {
             setSelectedUser({
               name: data[key].name,
               uid: key,
               status: data[key].status,
             });
           }
-
+        
           if (data[key].status === "online") {
             changeSeenStatus(key);
-          }
-          //console.log(data[key].status, key, data[key].name);
+          } */
+
           return {
             name: data[key].name,
             uid: key,
@@ -100,6 +105,19 @@ const ChatWindow = () => {
           };
         });
         setUsers(users);
+        //console.log("Selected user", SUName, SUUid, SUStatus);
+        for (const user of users) {
+          //console.log("User", user);
+          if (user.uid === SUUid) {
+            //console.log("Setting selected user", user);
+            setSelectedUser(user);
+          }
+
+          if (user.status === "online") {
+            //console.log("Changing seen status", user);
+            changeSeenStatus(user.uid);
+          }
+        }
       }
     });
 
